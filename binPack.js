@@ -60,11 +60,13 @@ Bin.prototype.packBox = function(boxes){
 			//loop through box list
 			for(var boxInd = 0; boxInd < boxes.length; boxInd++){
 				//begin by trying to pack box in the bottom left corner
+				console.log(boxes[boxInd])
 				var match = false;
+				var flipped = false;
 				for(var vertInd = this.grid.length-1; vertInd >= 0 && !match; vertInd--){
 					for(var horzInd = 0; horzInd < this.grid[vertInd].length && !match; horzInd++){
-						//if there's nothing at this space, check from this space as the bottom left hand corner up to the width/length of the box for empty space
-						if(vertInd - boxes[boxInd].width > 0 && horzInd + boxes[boxInd].length <= this.grid[vertInd].length && this.grid[vertInd][horzInd] == 0){
+						//if there's nothing at this space, and the addition of the box size does not go beyond the bounds of the box
+						if(vertInd - boxes[boxInd].width > 0 && horzInd + boxes[boxInd].length <= this.grid[vertInd].length && this.grid[vertInd][horzInd] == ' '){
 							var isSize = true;
 							for(var i = boxes[boxInd].width; i >= 0 && isSize; i--){
 								for(var j = 0; j < boxes[boxInd].length && isSize; j++){
@@ -77,19 +79,20 @@ Bin.prototype.packBox = function(boxes){
 									} else if(match){
 										this.grid[vertInd - i][horzInd + j] = boxInd+1;
 									} 
-
 								}
 							}
 						}
-						if(vertInd == 0 && horzInd == boxes[boxInd].length && !match){
-							console.log('Unable to fit box ' + (boxInd+1) + ' in the container.')
-						}
 					}
-					
-					//if the box can be rotated, 
-					// if(boxes[boxInd].directSpec){
-					// 	boxInd--;
-					// }
+				}
+				//if the box can be rotated and there hasnt been a match yet, rotate to try and fit
+				console.log(boxes[boxInd].directSpec + ' ' + match + ' ' + flipped)
+				if(!boxes[boxInd].directSpec && !match && !flipped){
+					[boxes[boxInd].width, boxes[boxInd].length] = [boxes[boxInd].length,boxes[boxInd].width];
+					boxInd--;
+					flipped = true;
+				} 
+				else if(!match){
+					return 'Could not pack box number ' + (boxInd+1) + ' of size [' + boxes[boxInd].width + ',' + boxes[boxInd].length + ']'
 				}
 				this.print();
 			}
@@ -107,11 +110,17 @@ var box3 = new Box(10,10);
 var box4 = new Box(5,10);
 var box5 = new Box(3,18);
 var box6 = new Box(2,18);
+<<<<<<< HEAD
 var box7 = new Box(30,30);
+=======
+var box7 = new Box(10,25);
+box7.directSpec = false;
+var box8 = new Box(40,40);
+>>>>>>> finding_spaces_from_right
 
 
 
-console.log(bin.packBox([box1,box2,box3,box4,box5,box6,box7]));
+console.log(bin.packBox([box1,box2,box3,box4,box5,box6,box7,box8]));
 bin.print()
 // console.log(bin.packBox({name:'Ryan'}));
 // var box2 = new Box(1,1);
