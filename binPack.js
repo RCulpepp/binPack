@@ -75,22 +75,23 @@ Bin.prototype.packBox = function(boxes){
 										j = -1;
 										match = true;
 									} else if(match){
-										console.log((vertInd - i) + ', ' + (horzInd + j))
 										this.grid[vertInd - i][horzInd + j] = boxInd+1;
 									} 
 
 								}
 							}
-						} else if(vertInd == 0 && horzInd == boxes[boxInd].length && !match){
+						}
+						if(vertInd == 0 && horzInd == boxes[boxInd].length && !match){
 							console.log('Unable to fit box ' + (boxInd+1) + ' in the container.')
 						}
 					}
-					this.print();
+					
 					//if the box can be rotated, 
-					if(boxes[boxInd].directSpec){
-						boxInd--;
-					}
+					// if(boxes[boxInd].directSpec){
+					// 	boxInd--;
+					// }
 				}
+				this.print();
 			}
 		}
 	} 
@@ -106,7 +107,7 @@ var box3 = new Box(10,10);
 var box4 = new Box(5,10);
 var box5 = new Box(3,18);
 var box6 = new Box(2,18);
-var box7 = new Box(25,10);
+var box7 = new Box(30,30);
 
 
 
