@@ -110,13 +110,10 @@ var box3 = new Box(10,10);
 var box4 = new Box(5,10);
 var box5 = new Box(3,18);
 var box6 = new Box(2,18);
-<<<<<<< HEAD
-var box7 = new Box(30,30);
-=======
 var box7 = new Box(10,25);
 box7.directSpec = false;
 var box8 = new Box(40,40);
->>>>>>> finding_spaces_from_right
+
 
 
 
