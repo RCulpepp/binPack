@@ -9,18 +9,19 @@ class Bin {
 		for(var i=0; i < length; i++){
 			this.grid[i] = [];
 			for (var j=0; j < width; j++){
-				j == 2 ? this.grid[i].push(1) : this.grid[i].push(0);
+				// j == 2 || i == 2 ? this.grid[i].push(1) : 
+				this.grid[i].push(' ');
 			}
 		}
 		this.print = function(){
-			var bottom = " ----";
+			var bottom = " --";
 			for(var i=0; i < this.grid.length; i++){
 				var string = "|  ";
 				for(var j=0; j<this.grid[i].length; j++){
-					string += this.grid[i][j] + "  ";
+					string += this.grid[i][j] + " ";	
 				}
 				string += "|";
-				bottom += "-----";
+				bottom += "--";
 				console.log(string);
 			}
 			console.log(bottom);
@@ -32,19 +33,10 @@ class Box {
 	constructor(length, width){
 		this.length = length;
 		this.width = width;
-		//is it possible to rotate this box? default: true
 		this.directSpec = true;
 
 	}
 }
-
-// class emptySpace(){
-// 	contructor(){
-// 		this.rows = [];
-// 		this.start = -1;
-// 		this.stop = -1;
-// 	}
-// }
 
 Bin.prototype.packBox = function(boxes){
 	if(this.full){
@@ -67,50 +59,38 @@ Bin.prototype.packBox = function(boxes){
 			var spaces = [];
 			//loop through box list
 			for(var boxInd = 0; boxInd < boxes.length; boxInd++){
-				//loop through all rows in grid array to find space equal to the box size
-				for(let vertInd = 0; vertInd < this.grid.length; vertInd++){
-					var nextStart = 0;
-					//loop through elements in a grid row to find space
-					for(let horzInd = 0; horzInd < this.grid[vertInd].length; horzInd+= nextStart+1){
-						var space = {
-							start: [],
-							stop: null
-						};
-						console.log('Starting at: ' + vertInd + ', ' + horzInd);
-						console.log('-----------------');
-						//if the value is 0 (empty), and the horizontal and vertical point plus the length/width does not extend beyond the end of the grid
-						// to be used as top left corner for search
-						if(vertInd + boxes[boxInd].width <= this.grid.length && horzInd + boxes[boxInd].length <= this.grid[vertInd].length && this.grid[vertInd][horzInd] == 0){
-							console.log('im here!')
-							space.start = [vertInd, horzInd];
+				//begin by trying to pack box in the bottom left corner
+				var match = false;
+				for(var vertInd = this.grid.length-1; vertInd >= 0 && !match; vertInd--){
+					for(var horzInd = 0; horzInd < this.grid[vertInd].length && !match; horzInd++){
+						//if there's nothing at this space, check from this space as the bottom left hand corner up to the width/length of the box for empty space
+						if(vertInd - boxes[boxInd].width > 0 && horzInd + boxes[boxInd].length <= this.grid[vertInd].length && this.grid[vertInd][horzInd] == 0){
 							var isSize = true;
-							//loop through elements to the left of the position up to the full width of the box
-							for(var i=0; i < boxes[boxInd].width; i++){
-								//if the current sized search box is within the size of the given box and is completely empty
-								if(isSize){
-									for(var j=0; j < boxes[boxInd].length; j++){
-										console.log('')
-										console.log(i + ', ' + j)
-										if(this.grid[vertInd + i][horzInd + j] != 0){
-											isSize = false;
-											if(i == 0){
-												nextStart += j;
-											}
-										}
-										if(i == boxes[boxInd].width-1 && j == boxes[boxInd].length-1){
-											space.stop = [vertInd + i, horzInd + j];
-											spaces.push(space);
-											break;
-										}
-									}
-								} else {
-									break;
+							for(var i = boxes[boxInd].width; i >= 0 && isSize; i--){
+								for(var j = 0; j < boxes[boxInd].length && isSize; j++){
+									if(this.grid[vertInd - i][horzInd + j] != 0 && !match){
+										isSize = false;
+									} else if(j == boxes[boxInd].length-1 && i == 0 && !match){
+										i = boxes[boxInd].width-1;
+										j = -1;
+										match = true;
+									} else if(match){
+										console.log((vertInd - i) + ', ' + (horzInd + j))
+										this.grid[vertInd - i][horzInd + j] = boxInd+1;
+									} 
+
 								}
 							}
+						} else if(vertInd == 0 && horzInd == boxes[boxInd].length && !match){
+							console.log('Unable to fit box ' + (boxInd+1) + ' in the container.')
 						}
 					}
+					this.print();
+					//if the box can be rotated, 
+					if(boxes[boxInd].directSpec){
+						boxInd--;
+					}
 				}
-			console.log(spaces);
 			}
 		}
 	} 
@@ -121,7 +101,17 @@ Bin.prototype.packBox = function(boxes){
 var bin = new Bin(30,30);
 bin.print();
 var box1 = new Box(3,3);
-bin.packBox(box1);
+var box2 = new Box(10,10);
+var box3 = new Box(10,10);
+var box4 = new Box(5,10);
+var box5 = new Box(3,18);
+var box6 = new Box(2,18);
+var box7 = new Box(25,10);
+
+
+
+console.log(bin.packBox([box1,box2,box3,box4,box5,box6,box7]));
+bin.print()
 // console.log(bin.packBox({name:'Ryan'}));
 // var box2 = new Box(1,1);
 // var box3 = new Box(1,1);
